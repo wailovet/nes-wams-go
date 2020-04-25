@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <script src="wasm_exec.js"></script>
+
+    <title>Title</title>
+</head>
+<body>
+
+<canvas id="game" width="256" height="240" style="width: 1024px;height: 960px;"></canvas>
+</body>
+<script>
+    var width = 256;
+    var height = 240;
+    var game = document.getElementById('game').getContext("2d");
+    var buffer = game.createImageData(width, height);
+    buffer.width = width;
+    buffer.height = height;
+    document.getElementById('game').width = width;
+    document.getElementById('game').height = height;
+    var fps = 0;
+    setInterval(function () {
+        console.log(fps);
+        fps = 0
+    }, 1000);
+    setsec = 1 / 60;
+
+    var button = [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+    ];
+    var buttonMap = {
+        KeyQ: 0,
+        KeyW: 1,
+        KeyZ: 2,
+        Space: 3,
+        ArrowUp: 4,
+        ArrowDown: 5,
+        ArrowLeft: 6,
+        ArrowRight: 7,
+    };
+    document.onkeydown = function (e) {
+        e = e || window["event"];  //标准化事件处理
+        console.log("b", e);
+        button[buttonMap[e["code"]]] = true;
+        nesButton(button[0], button[1], button[2], button[3], button[4], button[5], button[6], button[7])
+    };
+    document.onkeyup = function (e) {
+        e = e || window["event"];  //标准化事件处理
+        button[buttonMap[e["code"]]] = false;
+        nesButton(button[0], button[1], button[2], button[3], button[4], button[5], button[6], button[7])
+    };
+    var last = null;
+
+    GoLoad("nes_wams_go_js", function () {
+        window.requestAnimationFrame(function fn(timestamp) {
+
+
+            if (timestamp > last ) {
+                console.log(timestamp - last)
+                let data = nes();
+                buffer.data.set(data);
+                game.putImageData(buffer, 0, 0,);
+                fps++;
+                last = timestamp
+            }
+
+            window.requestAnimationFrame(fn);
+        });
+
+    })
+
+
+</script>
+</html>
